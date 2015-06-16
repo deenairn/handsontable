@@ -121,4 +121,28 @@ describe('NumericRenderer', function () {
     expect(TD.className).toContain('htDimmed');
     instance.destroy();
   });
+
+  it('should render a number beginning with .', function () {
+    var onAfterValidate = jasmine.createSpy('onAfterValidate');
+
+    handsontable({
+      cells: function () {
+        return {
+          type: 'numeric',
+          format: '0.00%'
+        }
+      },
+      afterValidate: onAfterValidate
+    });
+
+    setDataAtCell(2, 2, '.234');
+
+    waitsFor(function () {
+      return onAfterValidate.calls.length > 0;
+    }, 'Cell validation 2', 1000);
+
+    runs(function () {
+      expect(getCell(2, 2).innerHTML).toEqual('0.23%');
+    });
+  });
 });

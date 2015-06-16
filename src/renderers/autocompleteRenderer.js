@@ -54,7 +54,18 @@ function autocompleteRenderer(instance, TD, row, col, prop, value, cellPropertie
     //this is faster than innerHTML. See: https://github.com/handsontable/handsontable/wiki/JavaScript-&-DOM-performance-tips
   }
 
+  if (!cellProperties.wordWrap)
+  {
+    // Prevent overflow
+    var textDivWidth = instance.getColWidth(col) - 25;
+    var textDiv = document.createElement('div');
+    textDiv.textContent = TD.textContent.replace(TD.lastElementChild.textContent, '');
+    textDiv.style.width = textDivWidth + 'px';
+    textDiv.style.float = 'left';
+    textDiv.style.overflow = 'hidden';
 
+    TD.innerHTML = textDiv.outerHTML + TD.lastElementChild.outerHTML;
+  }
 
   if (!instance.acArrowListener) {
     var eventManager = eventManagerObject(instance);
