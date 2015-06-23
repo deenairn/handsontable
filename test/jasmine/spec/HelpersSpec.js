@@ -33,7 +33,7 @@ describe('Handsontable.helper', function () {
       expect(Handsontable.helper.isInput(document.createElement('select'))).toBe(true);
       expect(Handsontable.helper.isInput(document.createElement('textarea'))).toBe(true);
     });
-    
+
     it("should return true for contenteditable elements", function () {
       var div = document.createElement('div');
       div.contentEditable = true;
@@ -60,5 +60,29 @@ describe('Handsontable.helper', function () {
       expect(Handsontable.helper.duckSchema({test: {a: {b: []}}})).toEqual({test: {a: {b: []}}});
       expect(Handsontable.helper.duckSchema({test: {a: {b: [{q: 1, w: 2}]}}})).toEqual({test: {a: {b: [{q: null, w: null}]}}});
     });
+  });
+
+  //
+  // Handsontable.helper.isNumeric
+  //
+  describe('isNumeric', function() {
+    it("should consider numbers with no decimal point numbers", function () {
+      expect(Handsontable.helper.isNumeric("0")).toEqual(true);
+      expect(Handsontable.helper.isNumeric("10")).toEqual(true);
+      expect(Handsontable.helper.isNumeric("1000")).toEqual(true);
+    });
+
+    it("should consider numbers with no zero before the decimal point numbers", function () {
+      expect(Handsontable.helper.isNumeric(".1")).toEqual(true);
+      expect(Handsontable.helper.isNumeric(".10")).toEqual(true);
+      expect(Handsontable.helper.isNumeric(".001")).toEqual(true);
+    });
+
+    it("should consider numbers with decimal point after leading numbers", function () {
+      expect(Handsontable.helper.isNumeric("10.1")).toEqual(true);
+      expect(Handsontable.helper.isNumeric("512.10")).toEqual(true);
+      expect(Handsontable.helper.isNumeric("1001.001")).toEqual(true);
+    });
+
   });
 });

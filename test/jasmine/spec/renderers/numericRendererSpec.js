@@ -142,7 +142,7 @@ describe('NumericRenderer', function () {
     }, 'Cell validation 2', 1000);
 
     runs(function () {
-      expect(getCell(2, 2).innerHTML).toEqual('0.23%');
+      expect(getCell(2, 2).innerHTML).toEqual('23%');
     });
   });
 });

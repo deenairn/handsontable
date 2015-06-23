@@ -7,13 +7,13 @@
  * Licensed under the MIT license.
  * http://handsontable.com/
  *
- * Date: Fri Jun 05 2015 09:18:04 GMT+0200 (CEST)
+ * Date: Wed Jun 24 2015 00:43:01 GMT+0100 (GMT Daylight Time)
  */
 /*jslint white: true, browser: true, plusplus: true, indent: 4, maxerr: 50 */
 
 window.Handsontable = {
   version: '0.15.0-beta6',
-  buildDate: 'Fri Jun 05 2015 09:18:04 GMT+0200 (CEST)'
+  buildDate: 'Wed Jun 24 2015 00:43:01 GMT+0100 (GMT Daylight Time)'
 };
 require=(function outer (modules, cache, entry) {
   // Save the require from previous bundle to this closure if any
@@ -8573,7 +8573,7 @@ function createSpreadsheetObjectData(rowCount, colCount) {
 }
 function isNumeric(n) {
   var t = typeof n;
-  return t == 'number' ? !isNaN(n) && isFinite(n) : t == 'string' ? !n.length ? false : n.length == 1 ? /\d/.test(n) : /^\s*[+-]?\s*(?:(?:\d+(?:\.\d+)?(?:e[+-]?\d+)?)|(?:0x[a-f\d]+))\s*$/i.test(n) : t == 'object' ? !!n && typeof n.valueOf() == "number" && !(n instanceof Date) : false;
+  return t == 'number' ? !isNaN(n) && isFinite(n) : t == 'string' ? !n.length ? false : n.length == 1 ? /\d/.test(n) : /^\s*[+-]?\s*(?:(?:\d*(?:\.\d+)?(?:e[+-]?\d+)?)|(?:0x[a-f\d]+))\s*$/i.test(n) : t == 'object' ? !!n && typeof n.valueOf() == "number" && !(n instanceof Date) : false;
 }
 function randomString() {
   function s4() {
@@ -10250,6 +10250,143 @@ registerPlugin('comments', Comments);
 },{"./../../3rdparty/walkontable/src/cell/coords.js":5,"./../../dom.js":27,"./../../eventManager.js":41,"./../../plugins.js":45,"./../_base.js":46,"./commentEditor.js":50}],52:[function(require,module,exports){
 "use strict";
 Object.defineProperties(exports, {
+  ContextMenuCopyPaste: {get: function() {
+      return ContextMenuCopyPaste;
+    }},
+  __esModule: {value: true}
+});
+var $___46__46__47__46__46__47_dom_46_js__,
+    $___46__46__47__46__46__47_eventManager_46_js__,
+    $___46__46__47__46__46__47_plugins_46_js__,
+    $___46__46__47__95_base_46_js__,
+    $__zeroclipboard__;
+var dom = ($___46__46__47__46__46__47_dom_46_js__ = require("./../../dom.js"), $___46__46__47__46__46__47_dom_46_js__ && $___46__46__47__46__46__47_dom_46_js__.__esModule && $___46__46__47__46__46__47_dom_46_js__ || {default: $___46__46__47__46__46__47_dom_46_js__});
+var eventManagerObject = ($___46__46__47__46__46__47_eventManager_46_js__ = require("./../../eventManager.js"), $___46__46__47__46__46__47_eventManager_46_js__ && $___46__46__47__46__46__47_eventManager_46_js__.__esModule && $___46__46__47__46__46__47_eventManager_46_js__ || {default: $___46__46__47__46__46__47_eventManager_46_js__}).eventManager;
+var registerPlugin = ($___46__46__47__46__46__47_plugins_46_js__ = require("./../../plugins.js"), $___46__46__47__46__46__47_plugins_46_js__ && $___46__46__47__46__46__47_plugins_46_js__.__esModule && $___46__46__47__46__46__47_plugins_46_js__ || {default: $___46__46__47__46__46__47_plugins_46_js__}).registerPlugin;
+var BasePlugin = ($___46__46__47__95_base_46_js__ = require("./../_base.js"), $___46__46__47__95_base_46_js__ && $___46__46__47__95_base_46_js__.__esModule && $___46__46__47__95_base_46_js__ || {default: $___46__46__47__95_base_46_js__}).default;
+var ZeroClipboard = ($__zeroclipboard__ = require("zeroclipboard"), $__zeroclipboard__ && $__zeroclipboard__.__esModule && $__zeroclipboard__ || {default: $__zeroclipboard__}).default;
+var ContextMenuCopyPaste = function ContextMenuCopyPaste(hotInstance) {
+  var $__4 = this;
+  $traceurRuntime.superConstructor($ContextMenuCopyPaste).call(this, hotInstance);
+  this.swfPath = null;
+  this.hotContextMenu = null;
+  this.outsideClickDeselectsCache = null;
+  this.hot.addHook('afterContextMenuShow', (function(htContextMenu) {
+    return $__4.setupZeroClipboard(htContextMenu);
+  }));
+  this.hot.addHook('afterInit', (function() {
+    return $__4.afterInit();
+  }));
+  this.hot.addHook('afterContextMenuDefaultOptions', (function(options) {
+    return $__4.addToContextMenu(options);
+  }));
+};
+var $ContextMenuCopyPaste = ContextMenuCopyPaste;
+($traceurRuntime.createClass)(ContextMenuCopyPaste, {
+  afterInit: function() {
+    if (!this.hot.getSettings().contextMenuCopyPaste) {
+      return;
+    } else if (typeof this.hot.getSettings().contextMenuCopyPaste == 'object') {
+      this.swfPath = this.hot.getSettings().contextMenuCopyPaste.swfPath;
+    }
+    if (typeof ZeroClipboard === 'undefined') {
+      throw new Error("To be able to use the Copy/Paste feature from the context menu, you need to manualy include ZeroClipboard.js file to your website.");
+    }
+    try {
+      new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+    } catch (exception) {
+      if ('undefined' == typeof navigator.mimeTypes['application/x-shockwave-flash']) {
+        throw new Error("To be able to use the Copy/Paste feature from the context menu, your browser needs to have Flash Plugin installed.");
+      }
+    }
+    this.prepareZeroClipboard();
+  },
+  prepareZeroClipboard: function() {
+    if (this.swfPath) {
+      ZeroClipboard.config({swfPath: this.swfPath});
+    }
+  },
+  getCopyValue: function() {
+    this.hot.copyPaste.setCopyableText();
+    return this.hot.copyPaste.copyPasteInstance.elTextarea.value;
+  },
+  addToContextMenu: function(defaultOptions) {
+    if (!this.hot.getSettings().contextMenuCopyPaste) {
+      return;
+    }
+    defaultOptions.items.unshift({
+      key: 'copy',
+      name: 'Copy'
+    }, {
+      key: 'paste',
+      name: 'Paste',
+      callback: function() {
+        this.copyPaste.triggerPaste();
+      }
+    }, Handsontable.ContextMenu.SEPARATOR);
+  },
+  setupZeroClipboard: function(hotContextMenu) {
+    var $__4 = this;
+    var data,
+        zeroClipboardInstance;
+    if (!this.hot.getSettings().contextMenuCopyPaste) {
+      return;
+    }
+    this.hotContextMenu = hotContextMenu;
+    data = this.hotContextMenu.getData();
+    for (var i = 0,
+        ilen = data.length; i < ilen; i++) {
+      if (data[i].key === 'copy') {
+        zeroClipboardInstance = new ZeroClipboard(this.hotContextMenu.getCell(i, 0));
+        zeroClipboardInstance.off();
+        zeroClipboardInstance.on('copy', (function(event) {
+          var clipboard = event.clipboardData;
+          clipboard.setData('text/plain', $__4.getCopyValue());
+          $__4.hot.getSettings().outsideClickDeselects = $__4.outsideClickDeselectsCache;
+        }));
+        this.bindEvents();
+        break;
+      }
+    }
+  },
+  removeCurrentClass: function() {
+    if (this.hotContextMenu.rootElement) {
+      var element = this.hotContextMenu.rootElement.querySelector('td.current');
+      if (element) {
+        dom.removeClass(element, 'current');
+      }
+    }
+    this.outsideClickDeselectsCache = this.hot.getSettings().outsideClickDeselects;
+    this.hot.getSettings().outsideClickDeselects = false;
+  },
+  removeZeroClipboardClass: function() {
+    if (this.hotContextMenu.rootElement) {
+      var element = this.hotContextMenu.rootElement.querySelector('td.zeroclipboard-is-hover');
+      if (element) {
+        dom.removeClass(element, 'zeroclipboard-is-hover');
+      }
+    }
+    this.hot.getSettings().outsideClickDeselects = this.outsideClickDeselectsCache;
+  },
+  bindEvents: function() {
+    var $__4 = this;
+    var eventManager = eventManagerObject(this.hotContextMenu);
+    eventManager.addEventListener(document, 'mouseenter', (function() {
+      return $__4.removeCurrentClass();
+    }));
+    eventManager.addEventListener(document, 'mouseleave', (function() {
+      return $__4.removeZeroClipboardClass();
+    }));
+  }
+}, {}, BasePlugin);
+;
+registerPlugin('contextMenuCopyPaste', ContextMenuCopyPaste);
+
+
+//# 
+},{"./../../dom.js":27,"./../../eventManager.js":41,"./../../plugins.js":45,"./../_base.js":46,"zeroclipboard":undefined}],53:[function(require,module,exports){
+"use strict";
+Object.defineProperties(exports, {
   ContextMenu: {get: function() {
       return ContextMenu;
     }},
@@ -11193,144 +11330,7 @@ Handsontable.ContextMenu = ContextMenu;
 
 
 //# 
-},{"./../../dom.js":27,"./../../eventManager.js":41,"./../../helpers.js":42,"./../../plugins.js":45}],53:[function(require,module,exports){
-"use strict";
-Object.defineProperties(exports, {
-  ContextMenuCopyPaste: {get: function() {
-      return ContextMenuCopyPaste;
-    }},
-  __esModule: {value: true}
-});
-var $___46__46__47__46__46__47_dom_46_js__,
-    $___46__46__47__46__46__47_eventManager_46_js__,
-    $___46__46__47__46__46__47_plugins_46_js__,
-    $___46__46__47__95_base_46_js__,
-    $__zeroclipboard__;
-var dom = ($___46__46__47__46__46__47_dom_46_js__ = require("./../../dom.js"), $___46__46__47__46__46__47_dom_46_js__ && $___46__46__47__46__46__47_dom_46_js__.__esModule && $___46__46__47__46__46__47_dom_46_js__ || {default: $___46__46__47__46__46__47_dom_46_js__});
-var eventManagerObject = ($___46__46__47__46__46__47_eventManager_46_js__ = require("./../../eventManager.js"), $___46__46__47__46__46__47_eventManager_46_js__ && $___46__46__47__46__46__47_eventManager_46_js__.__esModule && $___46__46__47__46__46__47_eventManager_46_js__ || {default: $___46__46__47__46__46__47_eventManager_46_js__}).eventManager;
-var registerPlugin = ($___46__46__47__46__46__47_plugins_46_js__ = require("./../../plugins.js"), $___46__46__47__46__46__47_plugins_46_js__ && $___46__46__47__46__46__47_plugins_46_js__.__esModule && $___46__46__47__46__46__47_plugins_46_js__ || {default: $___46__46__47__46__46__47_plugins_46_js__}).registerPlugin;
-var BasePlugin = ($___46__46__47__95_base_46_js__ = require("./../_base.js"), $___46__46__47__95_base_46_js__ && $___46__46__47__95_base_46_js__.__esModule && $___46__46__47__95_base_46_js__ || {default: $___46__46__47__95_base_46_js__}).default;
-var ZeroClipboard = ($__zeroclipboard__ = require("zeroclipboard"), $__zeroclipboard__ && $__zeroclipboard__.__esModule && $__zeroclipboard__ || {default: $__zeroclipboard__}).default;
-var ContextMenuCopyPaste = function ContextMenuCopyPaste(hotInstance) {
-  var $__4 = this;
-  $traceurRuntime.superConstructor($ContextMenuCopyPaste).call(this, hotInstance);
-  this.swfPath = null;
-  this.hotContextMenu = null;
-  this.outsideClickDeselectsCache = null;
-  this.hot.addHook('afterContextMenuShow', (function(htContextMenu) {
-    return $__4.setupZeroClipboard(htContextMenu);
-  }));
-  this.hot.addHook('afterInit', (function() {
-    return $__4.afterInit();
-  }));
-  this.hot.addHook('afterContextMenuDefaultOptions', (function(options) {
-    return $__4.addToContextMenu(options);
-  }));
-};
-var $ContextMenuCopyPaste = ContextMenuCopyPaste;
-($traceurRuntime.createClass)(ContextMenuCopyPaste, {
-  afterInit: function() {
-    if (!this.hot.getSettings().contextMenuCopyPaste) {
-      return;
-    } else if (typeof this.hot.getSettings().contextMenuCopyPaste == 'object') {
-      this.swfPath = this.hot.getSettings().contextMenuCopyPaste.swfPath;
-    }
-    if (typeof ZeroClipboard === 'undefined') {
-      throw new Error("To be able to use the Copy/Paste feature from the context menu, you need to manualy include ZeroClipboard.js file to your website.");
-    }
-    try {
-      new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-    } catch (exception) {
-      if ('undefined' == typeof navigator.mimeTypes['application/x-shockwave-flash']) {
-        throw new Error("To be able to use the Copy/Paste feature from the context menu, your browser needs to have Flash Plugin installed.");
-      }
-    }
-    this.prepareZeroClipboard();
-  },
-  prepareZeroClipboard: function() {
-    if (this.swfPath) {
-      ZeroClipboard.config({swfPath: this.swfPath});
-    }
-  },
-  getCopyValue: function() {
-    this.hot.copyPaste.setCopyableText();
-    return this.hot.copyPaste.copyPasteInstance.elTextarea.value;
-  },
-  addToContextMenu: function(defaultOptions) {
-    if (!this.hot.getSettings().contextMenuCopyPaste) {
-      return;
-    }
-    defaultOptions.items.unshift({
-      key: 'copy',
-      name: 'Copy'
-    }, {
-      key: 'paste',
-      name: 'Paste',
-      callback: function() {
-        this.copyPaste.triggerPaste();
-      }
-    }, Handsontable.ContextMenu.SEPARATOR);
-  },
-  setupZeroClipboard: function(hotContextMenu) {
-    var $__4 = this;
-    var data,
-        zeroClipboardInstance;
-    if (!this.hot.getSettings().contextMenuCopyPaste) {
-      return;
-    }
-    this.hotContextMenu = hotContextMenu;
-    data = this.hotContextMenu.getData();
-    for (var i = 0,
-        ilen = data.length; i < ilen; i++) {
-      if (data[i].key === 'copy') {
-        zeroClipboardInstance = new ZeroClipboard(this.hotContextMenu.getCell(i, 0));
-        zeroClipboardInstance.off();
-        zeroClipboardInstance.on('copy', (function(event) {
-          var clipboard = event.clipboardData;
-          clipboard.setData('text/plain', $__4.getCopyValue());
-          $__4.hot.getSettings().outsideClickDeselects = $__4.outsideClickDeselectsCache;
-        }));
-        this.bindEvents();
-        break;
-      }
-    }
-  },
-  removeCurrentClass: function() {
-    if (this.hotContextMenu.rootElement) {
-      var element = this.hotContextMenu.rootElement.querySelector('td.current');
-      if (element) {
-        dom.removeClass(element, 'current');
-      }
-    }
-    this.outsideClickDeselectsCache = this.hot.getSettings().outsideClickDeselects;
-    this.hot.getSettings().outsideClickDeselects = false;
-  },
-  removeZeroClipboardClass: function() {
-    if (this.hotContextMenu.rootElement) {
-      var element = this.hotContextMenu.rootElement.querySelector('td.zeroclipboard-is-hover');
-      if (element) {
-        dom.removeClass(element, 'zeroclipboard-is-hover');
-      }
-    }
-    this.hot.getSettings().outsideClickDeselects = this.outsideClickDeselectsCache;
-  },
-  bindEvents: function() {
-    var $__4 = this;
-    var eventManager = eventManagerObject(this.hotContextMenu);
-    eventManager.addEventListener(document, 'mouseenter', (function() {
-      return $__4.removeCurrentClass();
-    }));
-    eventManager.addEventListener(document, 'mouseleave', (function() {
-      return $__4.removeZeroClipboardClass();
-    }));
-  }
-}, {}, BasePlugin);
-;
-registerPlugin('contextMenuCopyPaste', ContextMenuCopyPaste);
-
-
-//# 
-},{"./../../dom.js":27,"./../../eventManager.js":41,"./../../plugins.js":45,"./../_base.js":46,"zeroclipboard":undefined}],54:[function(require,module,exports){
+},{"./../../dom.js":27,"./../../eventManager.js":41,"./../../helpers.js":42,"./../../plugins.js":45}],54:[function(require,module,exports){
 "use strict";
 Object.defineProperties(exports, {
   CopyPaste: {get: function() {
@@ -15694,6 +15694,15 @@ function autocompleteRenderer(instance, TD, row, col, prop, value, cellPropertie
   if (!TD.firstChild) {
     TD.appendChild(document.createTextNode(String.fromCharCode(160)));
   }
+  if (!cellProperties.wordWrap) {
+    var textDivWidth = instance.getColWidth(col) - 25;
+    var textDiv = document.createElement('div');
+    textDiv.textContent = TD.textContent.replace(TD.lastElementChild.textContent, '');
+    textDiv.style.width = textDivWidth + 'px';
+    textDiv.style.float = 'left';
+    textDiv.style.overflow = 'hidden';
+    TD.innerHTML = textDiv.outerHTML + TD.lastElementChild.outerHTML;
+  }
   if (!instance.acArrowListener) {
     var eventManager = eventManagerObject(instance);
     instance.acArrowListener = function(event) {
@@ -17603,4 +17612,4 @@ Handsontable.NumericValidator = function(value, callback) {
 
 
 //# 
-},{}]},{},[23,47,48,49,65,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,66,67,68,69,86,87,88,72,73,74,75,76,77,31,35,40,32,33,34,36,37,38,39]);
+},{}]},{},[23,47,48,49,65,50,51,53,52,54,55,56,57,58,59,60,61,62,63,64,66,67,68,69,86,87,88,72,73,74,75,76,77,31,35,40,32,33,34,36,37,38,39]);
