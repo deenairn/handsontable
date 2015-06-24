@@ -7,13 +7,13 @@
  * Licensed under the MIT license.
  * http://handsontable.com/
  *
- * Date: Wed Jun 24 2015 00:43:01 GMT+0100 (GMT Daylight Time)
+ * Date: Wed Jun 24 2015 01:04:16 GMT+0100 (GMT Daylight Time)
  */
 /*jslint white: true, browser: true, plusplus: true, indent: 4, maxerr: 50 */
 
 window.Handsontable = {
   version: '0.15.0-beta6',
-  buildDate: 'Wed Jun 24 2015 00:43:01 GMT+0100 (GMT Daylight Time)'
+  buildDate: 'Wed Jun 24 2015 01:04:16 GMT+0100 (GMT Daylight Time)'
 };
 require=(function outer (modules, cache, entry) {
   // Save the require from previous bundle to this closure if any
