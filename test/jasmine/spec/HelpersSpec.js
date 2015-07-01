@@ -33,10 +33,7 @@ describe('Handsontable.helper', function () {
       expect(Handsontable.helper.isInput(document.createElement('select'))).toBe(true);
       expect(Handsontable.helper.isInput(document.createElement('textarea'))).toBe(true);
     });
-<<<<<<< HEAD
 
-=======
->>>>>>> handsontable/master
     it("should return true for contenteditable elements", function () {
       var div = document.createElement('div');
       div.contentEditable = true;
@@ -66,7 +63,6 @@ describe('Handsontable.helper', function () {
   });
 
   //
-<<<<<<< HEAD
   // Handsontable.helper.isNumeric
   //
   describe('isNumeric', function() {
@@ -87,8 +83,8 @@ describe('Handsontable.helper', function () {
       expect(Handsontable.helper.isNumeric("512.10")).toEqual(true);
       expect(Handsontable.helper.isNumeric("1001.001")).toEqual(true);
     });
+  });
 
-=======
   // Handsontable.helper.equalsIgnoreCase
   //
   describe('equalsIgnoreCase', function() {
@@ -101,6 +97,5 @@ describe('Handsontable.helper', function () {
       expect(Handsontable.helper.equalsIgnoreCase('True', 'TRUE', false)).toEqual(false);
       expect(Handsontable.helper.equalsIgnoreCase('fals e', false)).toEqual(false);
     });
->>>>>>> handsontable/master
   });
 });
